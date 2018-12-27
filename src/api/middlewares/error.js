@@ -8,16 +8,23 @@ const { env } = require('./../../config/vars');
  * @public
  */
 const handler = (err, req, res, next) => {
+  const {
+    status,
+    message,
+    errors,
+    stack,
+  } = err;
+
   const response = {
-    code: err.status,
-    message: err.message || httpStatus[err.status],
-    errors: err.errors,
-    stack: err.stack,
+    code: status,
+    message: message || httpStatus[status],
+    errors,
+    stack,
   };
 
   if (env !== 'development') delete response.stack;
 
-  res.status(err.status).json(response);
+  res.status(status).json(response);
 };
 
 /**
@@ -27,20 +34,26 @@ const handler = (err, req, res, next) => {
 
 const converter = (err, req, res, next) => {
   let convertedError = err;
+  const {
+    errors,
+    message,
+    status,
+    stack,
+  } = err;
 
   if (err instanceof expressValidation.ValidationError) {
     convertedError = new APIError({
       message: 'Validation Error',
-      errors: err.errors,
-      status: err.status,
-      stack: err.stack,
+      errors,
+      status,
+      stack,
     });
   }
   if (!(err instanceof APIError)) {
     convertedError = new APIError({
-      message: err.message,
-      status: err.status,
-      stack: err.stack,
+      message,
+      status,
+      stack,
     });
   }
   return handler(convertedError, req, res);

@@ -1,3 +1,4 @@
+/* Responder class to set response structure */
 class Responder {
   data(data) {
     this._status = true;

@@ -36,7 +36,7 @@ userSchema.pre('save', async (next) => {});
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['id', 'name', 'email', 'picture', 'role', 'createdAt'];
+    const fields = ['_id', 'name'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -44,9 +44,6 @@ userSchema.method({
 
     return transformed;
   },
-
-  token() {},
-  // async passwordMatches() {},
 });
 
 userSchema.statics = {
@@ -62,19 +59,16 @@ userSchema.statics = {
     try {
       let user;
 
-      if (mongoose.Types.ObjectId.isValid(id)) {
-        user = await this.findById(id).exec();
-      }
-      if (user) {
-        return user;
-      }
+      if (mongoose.Types.ObjectId.isValid(id)) user = await this.findById(id).exec();
+      // console.log('USER: ', user);
+      if (user) return user;
 
       throw new APIError({
         message: 'User does not exist',
         status: httpStatus.NOT_FOUND,
       });
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
   },
 
@@ -102,31 +96,5 @@ userSchema.plugin(mongooseDelete, {
   deletedAt: true,
   overrideMethods: true,
 });
-
-// console.log('MODEL');
-// const User = mongoose.model('User', userSchema);
-// const fluffy = new User({ name: 'testing' });
-
-// const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-// const test = async () => {
-//   await fluffy.save(async () => {
-//     await wait(3000);
-//     await fluffy.delete();
-//   });
-//   await fluffy.save(async () => {
-//     console.log(fluffy.createdAt);
-//     console.log(fluffy.createdAt === fluffy.updatedAt);
-//     await wait(1000);
-//     fluffy.name = 'Don G';
-//     await fluffy.save(() => {
-//       console.log(fluffy.updatedAt);
-//       console.log(fluffy.createdAt < fluffy.updatedAt);
-//     });
-//   });
-// };
-
-// // test();
-
 
 module.exports = mongoose.model('User', userSchema);
