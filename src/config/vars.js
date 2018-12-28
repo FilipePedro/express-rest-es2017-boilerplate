@@ -9,9 +9,13 @@ require('dotenv-safe').load({
 console.log('ENV: ', process.env.NODE_ENV);
 
 const staticVars = {
+  env: process.env.NODE_ENV,
   app_name: process.env.APP_NAME,
   version: process.env.VERSION,
-  env: process.env.NODE_ENV,
+  cron_schedule_1m: process.env.DEV_CRON_SCHEDULE_1MINUTE,
+  cron_schedule_5m: process.env.DEV_CRON_SCHEDULE_5MINUTE,
+  cron_schedule_10m: process.env.DEV_CRON_SCHEDULE_10MINUTE,
+  cron_schedule_delete: process.env.DEV_CRON_DELETE_USERS,
 };
 
 const dynamicVars = {

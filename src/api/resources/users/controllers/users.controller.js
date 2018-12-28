@@ -8,9 +8,10 @@ const { respondSuccess } = require('./../../../utils/responder');
  * @public
  */
 const init = async (req, res, next) => {
-  res.status(httpStatus.OK).json(respondSuccess({
-    router: 'USER ROUTER OK!!',
-  }));
+  // res.status(httpStatus.OK).json(respondSuccess({
+  //   router: 'USER ROUTER OK!!',
+  // }));
+  res.render('user', { title: 'Hey', message: 'Jibbbzzzz!', youAreUsingPug: true });
 };
 
 /**

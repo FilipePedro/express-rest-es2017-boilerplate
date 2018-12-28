@@ -10,6 +10,9 @@ const { logs, version, bodyLimit } = require('./vars');
 // load express custom error handlers
 const error = require('./../api/middlewares/error');
 
+// template engine views
+const { configViews } = require('./views');
+
 // load api
 const api = require('./../api');
 
@@ -41,6 +44,9 @@ app.use(cors());
 
 // mount api version routes
 app.use(`/v${version}`, api);
+
+// set templates configuration
+configViews(app);
 
 // if error is not an instanceOf APIError, convert it.
 app.use(error.converter);
