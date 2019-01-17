@@ -4,4 +4,15 @@ html(lang="en")
     title= pageTitle
   body
     h1= message
-    
+    .quote
+      div
+        strong Count:
+        span  #{users.length}
+    each u in users
+      div
+        ul
+          li= u.name
+          li= u.email
+          li= u.role
+    else 
+      p No users found!!

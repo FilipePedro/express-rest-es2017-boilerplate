@@ -17,7 +17,7 @@ const {
   testingCron,
   testingGetUserCronById,
   testingDeleteUsersCron,
-} = require('./resources/cron');
+} = require('./jobs/index');
 
 /* ROUTERS */
 const usersRouter = require('./resources/users/router');
@@ -36,9 +36,9 @@ router.get('/status', (req, res, next) => res.status(httpStatus.OK).json(respond
 router.use('/users', usersRouter);
 
 // Starting cron process
-testingCron(cronSchedule1m);
-testingGetUserCronById(cronSchedule5m);
-testingDeleteUsersCron(cronSchedule10m);
+// testingCron(cronSchedule1m);
+// testingGetUserCronById(cronSchedule5m);
+// testingDeleteUsersCron(cronSchedule10m);
 
 
 module.exports = router;

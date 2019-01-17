@@ -5,6 +5,7 @@ const compress = require('compression');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const helmet = require('helmet');
+const responseTime = require('response-time');
 // load env vars
 const { logs, version, bodyLimit } = require('./vars');
 // load express custom error handlers
@@ -41,6 +42,9 @@ app.use(helmet());
 
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors());
+
+// adds process time property to res
+app.use(responseTime((req, res, time) => { res.processTime = time; }));
 
 // mount api version routes
 app.use(`/v${version}`, api);

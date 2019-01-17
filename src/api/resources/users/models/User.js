@@ -6,6 +6,8 @@ const APIError = require('./../../../utils/APIError');
 
 const { Schema } = mongoose;
 
+mongoose.set('useCreateIndex', true);
+
 /**
 * User Roles
 */
@@ -16,7 +18,31 @@ const roles = ['user', 'admin'];
  * @private
  */
 const userSchema = new Schema({
-  name: String,
+  email: {
+    type: String,
+    match: /^\S+@\S+\.\S+$/,
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+  },
+  name: {
+    type: String,
+    maxlength: 128,
+    index: true,
+    trim: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
+    maxlength: 128,
+  },
+  role: {
+    type: String,
+    enum: roles,
+    default: 'user',
+  },
 },
 {
   timestamps: true,
@@ -36,7 +62,7 @@ userSchema.pre('save', async (next) => {});
 userSchema.method({
   transform() {
     const transformed = {};
-    const fields = ['_id', 'name'];
+    const fields = ['_id', 'name', 'email', 'role'];
 
     fields.forEach((field) => {
       transformed[field] = this[field];
@@ -57,10 +83,8 @@ userSchema.statics = {
    */
   async get(id) {
     try {
-      let user;
-
+      let user = null;
       if (mongoose.Types.ObjectId.isValid(id)) user = await this.findById(id).exec();
-      // console.log('USER: ', user);
       if (user) return user;
 
       throw new APIError({
@@ -83,12 +107,37 @@ userSchema.statics = {
     page = 1, perPage = 30, name, email, role,
   }) {
     const options = omitBy({ name, email, role }, isNil);
-
     return this.find(options)
+      .select('name email role _id createdAt')
       .sort({ createdAt: -1 })
       .skip(perPage * (page - 1))
       .limit(perPage)
+      .lean()
       .exec();
+  },
+
+  /**
+  * Return new validation error
+  * if error is a mongoose duplicate key error
+  *
+  * @param {Error} error
+  * @returns {Error|APIError}
+  */
+  checkDuplicateEmail(error) {
+    if (error.name === 'MongoError' && error.code === 11000) {
+      return new APIError({
+        message: 'Validation Error',
+        errors: [{
+          field: 'email',
+          location: 'body',
+          messages: ['"email" already exists'],
+        }],
+        status: httpStatus.CONFLICT,
+        isPublic: true,
+        stack: error.stack,
+      });
+    }
+    return error;
   },
 };
 

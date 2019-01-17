@@ -32,7 +32,7 @@ const handler = (err, req, res, next) => {
  * @public
  */
 
-const converter = (err, req, res, next) => {
+const converter = (err, req, res, next) => { // eslint-disable-line consistent-return
   let convertedError = err;
   const {
     errors,
@@ -48,7 +48,9 @@ const converter = (err, req, res, next) => {
       status,
       stack,
     });
+    return handler(convertedError, req, res);
   }
+
   if (!(err instanceof APIError)) {
     convertedError = new APIError({
       message,
